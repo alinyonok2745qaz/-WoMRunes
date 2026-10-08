@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Скандинавские Руны — Три Атта</title>
+    <style>
+        :root {
+            --bg-dark: #0a0806;
+            --gold: #d4af37;
+            --gold-light: #fbe8a6;
+            --text-color: #e2d7c5;
+            --menu-bg: #140f0a;
+            --card-bg: #1a120b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Georgia', serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-color);
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* Кнопка открытия меню с рунической символикой */
+        .menu-toggle {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            background: rgba(20, 15, 10, 0.9);
+            border: 2px solid var(--gold);
+            color: var(--gold);
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.2rem;
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .menu-toggle:hover {
+            background: var(--gold);
+            color: #000;
+            box-shadow: 0 0 25px rgba(212, 175, 55, 0.8);
+        }
+
+        .menu-rune-icon {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        /* Боковое меню */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: -330px;
+            width: 310px;
+            height: 100%;
+            background: var(--menu-bg);
+            border-right: 2px solid var(--gold);
+            z-index: 999;
+            transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 90px 20px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            box-shadow: 10px 0 30px rgba(0, 0, 0, 0.9);
+        }
+
+        .sidebar.active {
+            left: 0;
+        }
+
+        .sidebar h2 {
+            color: var(--gold);
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 1.4rem;
+            border-bottom: 1px solid var(--gold);
+            padding-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .nav-btn {
+            background: rgba(45, 30, 18, 0.5);
+            border: 1px solid rgba(212, 175, 55, 0.4);
+            color: var(--text-color);
+            padding: 16px;
+            text-align: left;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn:hover, .nav-btn.active {
+            background: rgba(212, 175, 55, 0.25);
+            border-color: var(--gold);
+            color: var(--gold-light);
+            transform: translateX(8px);
+        }
+
+        /* Секции */
+        .section {
+            display: none;
+            min-height: 100vh;
+            padding: 90px 20px 40px;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        /* Главная страница (История Одина) */
+        #home {
+            background: linear-gradient(rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.88)),
+                        url('https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=1600&auto=format&fit=crop') center/cover no-repeat;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .history-card {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(15, 11, 7, 0.92);
+            border: 2px solid var(--gold);
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 0 35px rgba(0, 0, 0, 0.9);
+            line-height: 1.8;
+        }
+
+        .history-card h1 {
+            color: var(--gold);
+            text-align: center;
+            margin-bottom: 25px;
+            font-size: 2rem;
+            border-bottom: 1px dashed var(--gold);
+            padding-bottom: 15px;
+        }
+
+        .history-card p {
+            margin-bottom: 18px;
+            font-size: 1.1rem;
+            text-indent: 20px;
+        }
+
+        /* Практика - Атмосфера тематического стола гадания */
+        .practice-page {
+            background: radial-gradient(circle, rgba(55, 35, 20, 0.85) 0%, rgba(10, 8, 6, 0.98) 100%),
+                        url('https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?q=80&w=1600&auto=format&fit=crop') center/cover no-repeat;
+        }
+
+        .practice-container {
+            max-width: 950px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 25px;
+            text-align: center;
+        }
+
+        .question-box {
+            width: 100%;
+            max-width: 650px;
+        }
+
+        .question-box input {
+            width: 100%;
+            padding: 15px 22px;
+            background: rgba(15, 10, 5, 0.85);
+            border: 1.5px solid var(--gold);
+            border-radius: 8px;
+            color: var(--gold-light);
+            font-size: 1.1rem;
+            outline: none;
+            text-align: center;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.8);
+        }
+
+        .question-box input::placeholder {
+            color: #8c7b6c;
+        }
+
+        /* Перевёрнутые карты рун на столе */
+        .cards-carousel {
+            width: 100%;
+            display: flex;
+            gap: 15px;
+            overflow-x: auto;
+            padding: 25px 15px;
+            scroll-behavior: smooth;
+        }
+
+        .cards-carousel::-webkit-scrollbar {
+            height: 8px;
+        }
+
+        .cards-carousel::-webkit-scrollbar-thumb {
+            background: var(--gold);
+            border-radius: 4px;
+        }
+
+        .rune-card-back {
+            flex: 0 0 110px;
+            height: 160px;
+            background: linear-gradient(145deg, #2a1a0e, #100a05);
+            border: 2px solid var(--gold);
+            border-radius: 10px;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.7);
+            transition: all 0.3s ease;
+        }
+
+        .rune-card-back:hover {
+            transform: translateY(-12px) scale(1.03);
+            box-shadow: 0 12px 25px rgba(212, 175, 55, 0.5);
+            border-color: #fff;
+        }
+
+        .rune-card-inner {
+            width: 82%;
+            height: 88%;
+            border: 1px dashed rgba(212, 175, 55, 0.5);
+            border-radius: 6px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: rgba(212, 175, 55, 0.35);
+            font-size: 2.5rem;
+            user-select: none;
+        }
+
+        /* Выбранная руна и значение */
+        .result-area {
+            min-height: 280px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin-top: 10px;
+            width: 100%;
+        }
+
+        .rune-display {
+            width: 130px;
+            height: 190px;
+            background: #23160c;
+            border: 3px solid var(--gold);
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 4.8rem;
+            color: var(--gold-light);
+            box-shadow: 0 0 30px rgba(212, 175, 55, 0.6);
+            margin-bottom: 20px;
+            transition: transform 0.5s ease;
+            user-select: none;
+        }
+
+        .rune-display.reversed {
+            transform: rotate(180deg);
+        }
+
+        .rune-info {
+            background: rgba(12, 8, 4, 0.92);
+            border: 1px solid var(--gold);
+            padding: 18px 35px;
+            border-radius: 10px;
+            display: none;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.8);
+            max-width: 500px;
+        }
+
+        .rune-info.active {
+            display: block;
+        }
+
+        .rune-name {
+            font-size: 1.6rem;
+            color: var(--gold);
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        .rune-meaning {
+            font-size: 1.2rem;
+            color: var(--text-color);
+            letter-spacing: 0.5px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Кнопка открытия меню -->
+    <button class="menu-toggle" onclick="toggleMenu()">
+        <span class="menu-rune-icon">ᚱ</span> Меню
+    </button>
+
+    <!-- Боковое меню -->
+    <div class="sidebar" id="sidebar">
+        <h2>Три Атта</h2>
+        <button class="nav-btn active" onclick="showSection('home', this)">История Одина</button>
+        <button class="nav-btn" onclick="showSection('att1', this)">Практика для 3 курса</button>
+        <button class="nav-btn" onclick="showSection('att2', this)">Практика для 4 курса</button>
+        <button class="nav-btn" onclick="showSection('att3', this)">Практика для 5 курса</button>
+    </div>
+
+    <!-- Главная страница -->
+    <section id="home" class="section active">
+        <div class="history-card">
+            <h1>Легенда о Происхождении Рун</h1>
+            <p>Согласно скандинавским преданиям, руны были открыты Верховному Богу Одину благодаря великому самопожертвованию. Чтобы обрести сакральную мудрость, он пронзил себя копьем Гунгнир и привязал себя к древу Иггдрасиль.</p>
+            <p>Один провисел на Древе Миров девять дней и девяти ночей без воды и пищи. На исходе девятой ночи, взирая в темную бездну Урд, он увидел священные рунические символы.</p>
+            <p>С криком боли и прозрения он поднял руны из небытия. Эти тайные знаки были разделены на три священных семейства — Атта, каждый из которых отвечает за определенный этап мироздания и духовного развития.</p>
+        </div>
+    </section>
+
+    <!-- Практика для 3 курса (1-й Атт: Феу — Вуньо) -->
+    <section id="att1" class="section practice-page">
+        <div class="practice-container">
+            <h2 style="color: var(--gold);">Практика для 3 курса (1-й Атт: Феу — Вуньо)</h2>
+            <div class="question-box">
+                <input type="text" placeholder="Напишите ваш вопрос (если хотите)...">
+            </div>
+            <p style="color: #bfa88e;">Выберите перевёрнутую руну 1-го Атта из расклада снизу:</p>
+            <div class="cards-carousel" id="carousel-att1"></div>
+            <div class="result-area">
+                <div class="rune-display" id="rune-display-att1">?</div>
+                <div class="rune-info" id="rune-info-att1">
+                    <div class="rune-name" id="rune-name-att1"></div>
+                    <div class="rune-meaning" id="rune-meaning-att1"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Практика для 4 курса (2-й Атт: Хагалаз — Соулу) -->
+    <section id="att2" class="section practice-page">
+        <div class="practice-container">
+            <h2 style="color: var(--gold);">Практика для 4 курса (2-й Атт: Хагалаз — Соулу)</h2>
+            <div class="question-box">
+                <input type="text" placeholder="Напишите ваш вопрос (если хотите)...">
+            </div>
+            <p style="color: #bfa88e;">Выберите перевёрнутую руну 2-го Атта из расклада снизу:</p>
+            <div class="cards-carousel" id="carousel-att2"></div>
+            <div class="result-area">
+                <div class="rune-display" id="rune-display-att2">?</div>
+                <div class="rune-info" id="rune-info-att2">
+                    <div class="rune-name" id="rune-name-att2"></div>
+                    <div class="rune-meaning" id="rune-meaning-att2"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Практика для 5 курса (3-й Атт: Тейваз — Дагаз) -->
+    <section id="att3" class="section practice-page">
+        <div class="practice-container">
+            <h2 style="color: var(--gold);">Практика для 5 курса (3-й Атт: Тейваз — Дагаз)</h2>
+            <div class="question-box">
+                <input type="text" placeholder="Напишите ваш вопрос (если хотите)...">
+            </div>
+            <p style="color: #bfa88e;">Выберите перевёрнутую руну 3-го Атта из расклада снизу:</p>
+            <div class="cards-carousel" id="carousel-att3"></div>
+            <div class="result-area">
+                <div class="rune-display" id="rune-display-att3">?</div>
+                <div class="rune-info" id="rune-info-att3">
+                    <div class="rune-name" id="rune-name-att3"></div>
+                    <div class="rune-meaning" id="rune-meaning-att3"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // База данных рун со строго 3 словами значения
+        const runesData = {
+            // 3 курс: 1-й Атт (Феу - Вуньо)
+            att1: [
+                { symbol: 'ᚠ', name: 'Феу', canReverse: true, direct: 'Богатство Процветание Изобилие', reversed: 'Потеря Убыток Застой' },
+                { symbol: 'ᚢ', name: 'Уруз', canReverse: true, direct: 'Сила Здоровье Энергия', reversed: 'Слабость Бессилие Болезнь' },
+                { symbol: 'ᚦ', name: 'Турисаз', canReverse: true, direct: 'Защита Прорыв Действие', reversed: 'Опасность Безрассудство Уязвимость' },
+                { symbol: 'ᚨ', name: 'Ансуз', canReverse: true, direct: 'Мудрость Знак Знание', reversed: 'Обман Ложь Заблуждение' },
+                { symbol: 'ᚱ', name: 'Райдо', canReverse: true, direct: 'Путешествие Дорога Развитие', reversed: 'Препятствие Задержка Тупик' },
+                { symbol: 'ᚲ', name: 'Кано', canReverse: true, direct: 'Факел Ясность Вдохновение', reversed: 'Угасание Слепота Потеря' },
+                { symbol: 'ᚷ', name: 'Гебо', canReverse: false, direct: 'Дар Партнерство Союз', reversed: 'Дар Партнерство Союз' },
+                { symbol: 'ᚹ', name: 'Вуньо', canReverse: true, direct: 'Радость Счастье Успех', reversed: 'Печаль Разочарование Кризис' }
+            ],
+            // 4 курс: 2-й Атт (Хагалаз - Соулу)
+            att2: [
+                { symbol: 'ᚺ', name: 'Хагалаз', canReverse: false, direct: 'Разрушение Перемены Стихия', reversed: 'Разрушение Перемены Стихия' },
+                { symbol: 'ᚾ', name: 'Наутиз', canReverse: true, direct: 'Нужда Терпение Преодоление', reversed: 'Ограничение Горе Лишения' },
+                { symbol: 'ᛁ', name: 'Иса', canReverse: false, direct: 'Лёд Застой Пауза', reversed: 'Лёд Застой Пауза' },
+                { symbol: 'ᛃ', name: 'Йера', canReverse: false, direct: 'Урожай Награда Цикл', reversed: 'Урожай Награда Цикл' },
+                { symbol: 'ᛇ', name: 'Эйваз', canReverse: false, direct: 'Защита Выносливость Переход', reversed: 'Защита Выносливость Переход' },
+                { symbol: 'ᛈ', name: 'Перт', canReverse: true, direct: 'Тайна Судьба Откровение', reversed: 'Тайное-открыто Неудача Ошибка' },
+                { symbol: 'ᛉ', name: 'Альгиз', canReverse: true, direct: 'Защита Покровительство Безопасность', reversed: 'Уязвимость Опасность Предупреждение' },
+                { symbol: 'ᛋ', name: 'Соулу', canReverse: false, direct: 'Солнце Победа Триумф', reversed: 'Солнце Победа Триумф' }
+            ],
+            // 5 курс: 3-й Атт (Тейваз - Дагаз)
+            att3: [
+                { symbol: 'ᛏ', name: 'Тейваз', canReverse: true, direct: 'Воин Мужество Победа', reversed: 'Поражение Конфликт Упадок' },
+                { symbol: 'ᛒ', name: 'Беркана', canReverse: true, direct: 'Рост Рождение Плодородие', reversed: 'Застой Задержка Проблемы' },
+                { symbol: 'ᛖ', name: 'Эваз', canReverse: true, direct: 'Движение Прогресс Партнерство', reversed: 'Препятствие Разрыв Задержка' },
+                { symbol: 'ᛗ', name: 'Манназ', canReverse: true, direct: 'Человек Интеллект Сообщество', reversed: 'Изоляция Эгоизм Враги' },
+                { symbol: 'ᛚ', name: 'Лагуз', canReverse: true, direct: 'Интуиция Поток Чувства', reversed: 'Заблуждение Иллюзии Страх' },
+                { symbol: 'ᛝ', name: 'Ингуз', canReverse: false, direct: 'Завершение Потенциал Обновление', reversed: 'Завершение Потенциал Обновление' },
+                { symbol: 'ᛟ', name: 'Отал', canReverse: true, direct: 'Дом Наследие Семья', reversed: 'Потеря Раздор Убыток' },
+                { symbol: 'ᛞ', name: 'Дагаз', canReverse: false, direct: 'Прорыв Рассвет Трансформация', reversed: 'Прорыв Рассвет Трансформация' }
+            ]
+        };
+
+        function toggleMenu() {
+            document.getElementById('sidebar').classList.toggle('active');
+        }
+
+        function showSection(sectionId, btn) {
+            document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+
+            document.getElementById(sectionId).classList.add('active');
+            btn.classList.add('active');
+            toggleMenu();
+        }
+
+        // Генерация рубашек карт для каждого Атта
+        function initPractice() {
+            ['att1', 'att2', 'att3'].forEach(attKey => {
+                const carousel = document.getElementById(`carousel-${attKey}`);
+                carousel.innerHTML = '';
+
+                // Генерация 10 перевернутых карт
+                for (let i = 0; i < 10; i++) {
+                    const card = document.createElement('div');
+                    card.className = 'rune-card-back';
+                    card.innerHTML = `<div class="rune-card-inner">ᚱ</div>`;
+                    card.onclick = () => drawRune(attKey);
+                    carousel.appendChild(card);
+                }
+            });
+        }
+
+        // Вытягивание рандомной руны из выбранного Атта
+        function drawRune(attKey) {
+            const list = runesData[attKey];
+            const randomIndex = Math.floor(Math.random() * list.length);
+            const selectedRune = list[randomIndex];
+
+            // Проверка на случайное переворачивание руны
+            const isReversed = selectedRune.canReverse ? Math.random() < 0.5 : false;
+
+            const runeDisplay = document.getElementById(`rune-display-${attKey}`);
+            const runeName = document.getElementById(`rune-name-${attKey}`);
+            const runeMeaning = document.getElementById(`rune-meaning-${attKey}`);
+            const runeInfo = document.getElementById(`rune-info-${attKey}`);
+
+            // Вывод символа на карту
+            runeDisplay.textContent = selectedRune.symbol;
+            if (isReversed) {
+                runeDisplay.classList.add('reversed');
+            } else {
+                runeDisplay.classList.remove('reversed');
+            }
+
+            // Вывод описания
+            const statusText = isReversed ? '(Перевёрнутая)' : '(Прямая)';
+            const meaningText = isReversed ? selectedRune.reversed : selectedRune.direct;
+
+            runeName.textContent = `${selectedRune.name} ${statusText}`;
+            runeMeaning.textContent = meaningText;
+
+            runeInfo.classList.add('active');
+        }
+
+        window.onload = initPractice;
+    </script>
+</body>
+</html>
